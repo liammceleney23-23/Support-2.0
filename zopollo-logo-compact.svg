@@ -1,0 +1,57 @@
+<svg width="400" height="120" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 120">
+  <defs>
+    <linearGradient id="compactGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0066ff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00f0ff;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="compactTextGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#0066ff;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#00f0ff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0066ff;stop-opacity:1" />
+    </linearGradient>
+    <filter id="compactGlow">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Logo Icon - Compact Z -->
+  <g transform="translate(15, 25)">
+    <!-- Z shape -->
+    <path d="M 0,0 L 50,0 L 0,50 L 50,50"
+          stroke="url(#compactGradient)"
+          stroke-width="5"
+          fill="none"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          filter="url(#compactGlow)"/>
+
+    <!-- Circuit nodes -->
+    <circle cx="0" cy="0" r="4" fill="url(#compactGradient)" filter="url(#compactGlow)"/>
+    <circle cx="50" cy="0" r="4" fill="url(#compactGradient)" filter="url(#compactGlow)"/>
+    <circle cx="0" cy="50" r="4" fill="url(#compactGradient)" filter="url(#compactGlow)"/>
+    <circle cx="50" cy="50" r="4" fill="url(#compactGradient)" filter="url(#compactGlow)"/>
+
+    <!-- Center connection point -->
+    <circle cx="25" cy="25" r="5" fill="url(#compactGradient)" filter="url(#compactGlow)"/>
+  </g>
+
+  <!-- Company Name - Compact -->
+  <text x="90" y="55"
+        font-family="Orbitron, monospace"
+        font-size="42"
+        font-weight="900"
+        fill="url(#compactTextGrad)"
+        filter="url(#compactGlow)">ZOPOLLO</text>
+
+  <text x="90" y="85"
+        font-family="Orbitron, monospace"
+        font-size="28"
+        font-weight="500"
+        fill="#00f0ff"
+        letter-spacing="5"
+        opacity="0.9">IT</text>
+</svg>

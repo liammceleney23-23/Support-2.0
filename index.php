@@ -87,11 +87,14 @@
     <main class="main-content">
         <!-- Header -->
         <header class="header">
-            <button class="hamburger" id="hamburger" aria-label="Open menu">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
+            <div class="header-logo">
+                <button class="hamburger" id="hamburger" aria-label="Open menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <img src="zopollo-logo-compact.svg" alt="Zopollo IT">
+            </div>
 
             <div class="header-actions">
                 <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
