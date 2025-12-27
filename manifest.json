@@ -43,6 +43,18 @@
       ]
     },
     {
+      "name": "View Tickets",
+      "short_name": "View",
+      "description": "View all support tickets",
+      "url": "/view_tickets.php",
+      "icons": [
+        {
+          "src": "icon-192.svg",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
       "name": "System Status",
       "short_name": "Status",
       "description": "Check system status",

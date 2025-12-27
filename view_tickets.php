@@ -139,8 +139,138 @@ $tickets = array_reverse($tickets);
     </style>
 </head>
 <body>
-    <div class="ticket-container">
-        <a href="index.php" class="back-link">← Back to Home</a>
+    <!-- Overlay -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- Navigation Sidebar -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <svg width="200" height="60" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60">
+                    <defs>
+                        <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#0066ff;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#00f0ff;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <!-- Z Icon -->
+                    <g transform="translate(5, 15)">
+                        <path d="M 0,0 L 25,0 L 0,30 L 25,30"
+                              stroke="url(#logoGradient)"
+                              stroke-width="3"
+                              fill="none"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"/>
+                        <circle cx="0" cy="0" r="2.5" fill="url(#logoGradient)"/>
+                        <circle cx="25" cy="0" r="2.5" fill="url(#logoGradient)"/>
+                        <circle cx="0" cy="30" r="2.5" fill="url(#logoGradient)"/>
+                        <circle cx="25" cy="30" r="2.5" fill="url(#logoGradient)"/>
+                        <circle cx="12.5" cy="15" r="3" fill="url(#logoGradient)"/>
+                    </g>
+                    <!-- Text -->
+                    <text x="40" y="28"
+                          font-family="Orbitron, monospace"
+                          font-size="20"
+                          font-weight="900"
+                          fill="url(#logoGradient)">ZOPOLLO</text>
+                    <text x="40" y="45"
+                          font-family="Orbitron, monospace"
+                          font-size="14"
+                          font-weight="500"
+                          fill="#00f0ff"
+                          letter-spacing="2">IT</text>
+                </svg>
+            </div>
+            <button class="close-btn" id="closeBtn" aria-label="Close menu">&times;</button>
+        </div>
+
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="index.php#home" class="nav-link">
+                    <span class="nav-icon">🏠</span>
+                    Home
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="index.php#services" class="nav-link">
+                    <span class="nav-icon">🛠️</span>
+                    Services
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="index.php#support" class="nav-link">
+                    <span class="nav-icon">🎫</span>
+                    Submit Ticket
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="view_tickets.php" class="nav-link">
+                    <span class="nav-icon">📋</span>
+                    View Tickets
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="index.php#status" class="nav-link">
+                    <span class="nav-icon">📊</span>
+                    System Status
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="index.php#knowledge" class="nav-link">
+                    <span class="nav-icon">📚</span>
+                    Knowledge Base
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="index.php#contact" class="nav-link">
+                    <span class="nav-icon">📧</span>
+                    Contact Us
+                </a>
+            </li>
+        </ul>
+
+        <div class="sidebar-footer">
+            <div class="contact-info">
+                <p><strong>24/7 Support Hotline</strong></p>
+                <p><a href="tel:+1234567890">+1 (234) 567-890</a></p>
+                <p><a href="mailto:support@zopollo.com">support@zopollo.com</a></p>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-logo">
+                <button class="hamburger" id="hamburger" aria-label="Open menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <img src="zopollo-logo-compact.svg" alt="Zopollo IT">
+            </div>
+
+            <!-- Desktop Navigation -->
+            <nav class="desktop-nav">
+                <a href="index.php#home">🏠 Home</a>
+                <a href="index.php#services">🛠️ Services</a>
+                <a href="index.php#support">🎫 Submit Ticket</a>
+                <a href="view_tickets.php">📋 View Tickets</a>
+                <a href="index.php#status">📊 Status</a>
+                <a href="index.php#knowledge">📚 Knowledge</a>
+                <a href="index.php#contact">📧 Contact</a>
+            </nav>
+
+            <div class="header-actions">
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                    <span id="themeIcon">🌙</span>
+                    <span id="themeText">Dark</span>
+                </button>
+            </div>
+        </header>
+
+        <div class="ticket-container">
 
         <div class="ticket-header">
             <h1 style="font-family: 'Orbitron', monospace; font-size: 2rem; margin-bottom: 0.5rem;">Support Tickets Dashboard</h1>
@@ -226,12 +356,67 @@ $tickets = array_reverse($tickets);
                 </div>
             <?php endforeach; ?>
         <?php endif; ?>
-    </div>
+        </div>
+    </main>
 
     <script>
+        // Navigation
+        const hamburger = document.getElementById('hamburger');
+        const sidebar = document.getElementById('sidebar');
+        const closeBtn = document.getElementById('closeBtn');
+        const overlay = document.getElementById('overlay');
+        const navLinks = document.querySelectorAll('.nav-link');
+
+        hamburger.addEventListener('click', () => {
+            sidebar.classList.add('open');
+            overlay.classList.add('active');
+        });
+
+        closeBtn.addEventListener('click', () => {
+            sidebar.classList.remove('open');
+            overlay.classList.remove('active');
+        });
+
+        overlay.addEventListener('click', () => {
+            sidebar.classList.remove('open');
+            overlay.classList.remove('active');
+        });
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                sidebar.classList.remove('open');
+                overlay.classList.remove('active');
+            });
+        });
+
+        // Theme Toggle
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const themeText = document.getElementById('themeText');
+
         // Load saved theme
         const savedTheme = localStorage.getItem('theme') || 'light';
         document.documentElement.setAttribute('data-theme', savedTheme);
+        updateThemeButton(savedTheme);
+
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeButton(newTheme);
+        });
+
+        function updateThemeButton(theme) {
+            if (theme === 'dark') {
+                themeIcon.textContent = '☀️';
+                themeText.textContent = 'Light';
+            } else {
+                themeIcon.textContent = '🌙';
+                themeText.textContent = 'Dark';
+            }
+        }
     </script>
 </body>
 </html>

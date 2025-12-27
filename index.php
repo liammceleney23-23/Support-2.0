@@ -30,7 +30,40 @@
     <nav class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <div class="logo">
-                <img src="zopollo-logo.svg" alt="Zopollo IT">
+                <svg width="200" height="60" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60">
+                    <defs>
+                        <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#0066ff;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#00f0ff;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <!-- Z Icon -->
+                    <g transform="translate(5, 15)">
+                        <path d="M 0,0 L 25,0 L 0,30 L 25,30"
+                              stroke="url(#logoGradient)"
+                              stroke-width="3"
+                              fill="none"
+                              stroke-linecap="round"
+                              stroke-linejoin="round"/>
+                        <circle cx="0" cy="0" r="2.5" fill="url(#logoGradient)"/>
+                        <circle cx="25" cy="0" r="2.5" fill="url(#logoGradient)"/>
+                        <circle cx="0" cy="30" r="2.5" fill="url(#logoGradient)"/>
+                        <circle cx="25" cy="30" r="2.5" fill="url(#logoGradient)"/>
+                        <circle cx="12.5" cy="15" r="3" fill="url(#logoGradient)"/>
+                    </g>
+                    <!-- Text -->
+                    <text x="40" y="28"
+                          font-family="Orbitron, monospace"
+                          font-size="20"
+                          font-weight="900"
+                          fill="url(#logoGradient)">ZOPOLLO</text>
+                    <text x="40" y="45"
+                          font-family="Orbitron, monospace"
+                          font-size="14"
+                          font-weight="500"
+                          fill="#00f0ff"
+                          letter-spacing="2">IT</text>
+                </svg>
             </div>
             <button class="close-btn" id="closeBtn" aria-label="Close menu">&times;</button>
         </div>
@@ -52,6 +85,12 @@
                 <a href="#support" class="nav-link">
                     <span class="nav-icon">🎫</span>
                     Submit Ticket
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="view_tickets.php" class="nav-link">
+                    <span class="nav-icon">📋</span>
+                    View Tickets
                 </a>
             </li>
             <li class="nav-item">
@@ -101,6 +140,7 @@
                 <a href="#home">🏠 Home</a>
                 <a href="#services">🛠️ Services</a>
                 <a href="#support">🎫 Submit Ticket</a>
+                <a href="view_tickets.php">📋 View Tickets</a>
                 <a href="#status">📊 Status</a>
                 <a href="#knowledge">📚 Knowledge</a>
                 <a href="#contact">📧 Contact</a>
