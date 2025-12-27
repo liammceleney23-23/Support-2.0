@@ -165,6 +165,11 @@ switch ($action) {
 
 // Save tickets
 if (file_put_contents($tickets_file, json_encode($tickets, JSON_PRETTY_PRINT))) {
+    // Send push notification for responses and status changes
+    if ($action === 'add_response' || $action === 'update_status') {
+        sendPushNotification($ticket_id, $action, $tickets[$ticket_index]);
+    }
+
     echo json_encode([
         'success' => true,
         'message' => $success_message
@@ -174,5 +179,85 @@ if (file_put_contents($tickets_file, json_encode($tickets, JSON_PRETTY_PRINT))) 
         'success' => false,
         'message' => 'Failed to save ticket data'
     ]);
+}
+
+// Function to send push notifications
+function sendPushNotification($ticket_id, $action, $ticket_data) {
+    // Load subscriptions
+    $subscriptions_file = 'subscriptions.json';
+    if (!file_exists($subscriptions_file)) {
+        return; // No subscriptions to notify
+    }
+
+    $subscriptions_content = file_get_contents($subscriptions_file);
+    $subscriptions = json_decode($subscriptions_content, true);
+
+    if (!is_array($subscriptions) || empty($subscriptions)) {
+        return; // No subscriptions to notify
+    }
+
+    // Create notification payload based on action
+    $title = 'IT Support Ticket Update';
+    $body = '';
+
+    switch ($action) {
+        case 'add_response':
+            $body = "New response added to ticket $ticket_id";
+            break;
+        case 'update_status':
+            $status = $ticket_data['status'] ?? 'Unknown';
+            $body = "Ticket $ticket_id status changed to: $status";
+            break;
+        default:
+            $body = "Ticket $ticket_id has been updated";
+    }
+
+    $payload = json_encode([
+        'title' => $title,
+        'body' => $body,
+        'ticket_id' => $ticket_id,
+        'url' => "/manage_ticket.php?id=$ticket_id"
+    ]);
+
+    // In a production environment, you would:
+    // 1. Use a proper web push library (like web-push for PHP)
+    // 2. Use VAPID keys for authentication
+    // 3. Send actual push notifications to each subscription endpoint
+    //
+    // For now, we'll log the notification attempt
+    // You'll need to install web-push library: composer require minishlink/web-push
+
+    // Example (requires web-push library):
+    /*
+    require_once 'vendor/autoload.php';
+    use Minishlink\WebPush\WebPush;
+    use Minishlink\WebPush\Subscription;
+
+    $auth = [
+        'VAPID' => [
+            'subject' => 'mailto:support@zopollo.com',
+            'publicKey' => 'YOUR_PUBLIC_KEY',
+            'privateKey' => 'YOUR_PRIVATE_KEY'
+        ]
+    ];
+
+    $webPush = new WebPush($auth);
+
+    foreach ($subscriptions as $subscription) {
+        $webPush->queueNotification(
+            Subscription::create($subscription),
+            $payload
+        );
+    }
+
+    foreach ($webPush->flush() as $report) {
+        // Handle results
+    }
+    */
+
+    // Log notification for debugging
+    $log_file = 'notifications.log';
+    $log_entry = date('Y-m-d H:i:s') . " - Notification queued for $ticket_id: $body\n";
+    file_put_contents($log_file, $log_entry, FILE_APPEND);
 }
 ?>

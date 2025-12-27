@@ -607,6 +607,59 @@ $closed_tickets = array_reverse($closed_tickets);
                 expandText.textContent = 'Expand';
             }
         }
+
+        // Check if device is mobile
+        function isMobileDevice() {
+            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+                || window.innerWidth <= 768;
+        }
+
+        // Service Worker Registration and Push Notifications
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', async () => {
+                try {
+                    const registration = await navigator.serviceWorker.register('sw.js');
+                    console.log('Service Worker registered');
+
+                    // Request notification permission on mobile devices only
+                    if (isMobileDevice() && 'Notification' in window) {
+                        if (Notification.permission === 'granted') {
+                            // Subscribe to push notifications if already granted
+                            subscribeToPushNotifications(registration);
+                        }
+                    }
+                } catch (error) {
+                    console.log('Service Worker registration failed:', error);
+                }
+            });
+        }
+
+        // Subscribe to push notifications
+        async function subscribeToPushNotifications(registration) {
+            try {
+                if (!('pushManager' in registration)) {
+                    console.log('Push notifications not supported');
+                    return;
+                }
+
+                const subscription = await registration.pushManager.subscribe({
+                    userVisibleOnly: true,
+                    applicationServerKey: null
+                });
+
+                await fetch('save_subscription.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(subscription)
+                });
+
+                console.log('Push subscription successful');
+            } catch (error) {
+                console.error('Error subscribing to push notifications:', error);
+            }
+        }
     </script>
 </body>
 </html>

@@ -506,13 +506,74 @@
             deferredPrompt = null;
         });
 
-        // Service Worker Registration
+        // Service Worker Registration and Push Notifications
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js')
-                    .then(registration => console.log('Service Worker registered'))
-                    .catch(error => console.log('Service Worker registration failed:', error));
+            window.addEventListener('load', async () => {
+                try {
+                    const registration = await navigator.serviceWorker.register('sw.js');
+                    console.log('Service Worker registered');
+
+                    // Request notification permission on mobile devices only
+                    if (isMobileDevice() && 'Notification' in window) {
+                        // Check if permission is already granted
+                        if (Notification.permission === 'default') {
+                            // Show a subtle prompt after a delay
+                            setTimeout(() => {
+                                requestNotificationPermission(registration);
+                            }, 5000); // Wait 5 seconds before asking
+                        } else if (Notification.permission === 'granted') {
+                            // Subscribe to push notifications if already granted
+                            subscribeToPushNotifications(registration);
+                        }
+                    }
+                } catch (error) {
+                    console.log('Service Worker registration failed:', error);
+                }
             });
+        }
+
+        // Request notification permission
+        async function requestNotificationPermission(registration) {
+            try {
+                const permission = await Notification.requestPermission();
+                if (permission === 'granted') {
+                    console.log('Notification permission granted');
+                    await subscribeToPushNotifications(registration);
+                }
+            } catch (error) {
+                console.error('Error requesting notification permission:', error);
+            }
+        }
+
+        // Subscribe to push notifications
+        async function subscribeToPushNotifications(registration) {
+            try {
+                // Check if push manager is available
+                if (!('pushManager' in registration)) {
+                    console.log('Push notifications not supported');
+                    return;
+                }
+
+                // For demonstration purposes, we'll use a simple subscription
+                // In production, you would use VAPID keys from your server
+                const subscription = await registration.pushManager.subscribe({
+                    userVisibleOnly: true,
+                    applicationServerKey: null // In production, use your VAPID public key
+                });
+
+                // Send subscription to server
+                await fetch('save_subscription.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(subscription)
+                });
+
+                console.log('Push subscription successful');
+            } catch (error) {
+                console.error('Error subscribing to push notifications:', error);
+            }
         }
 
         // Form Submission Handler
