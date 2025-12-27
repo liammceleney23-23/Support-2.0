@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PWA Test Page</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div style="max-width: 800px; margin: 3rem auto; padding: 2rem;">
+        <h1 style="font-family: 'Orbitron', monospace; text-align: center; margin-bottom: 2rem;">
+            PWA Test Page
+        </h1>
+
+        <div style="background: var(--bg-secondary); padding: 2rem; border-radius: 16px; margin-bottom: 1rem;">
+            <h2>Service Worker Status</h2>
+            <p id="swStatus">Checking...</p>
+        </div>
+
+        <div style="background: var(--bg-secondary); padding: 2rem; border-radius: 16px; margin-bottom: 1rem;">
+            <h2>PWA Support</h2>
+            <p id="pwaSupport">Checking...</p>
+        </div>
+
+        <div style="background: var(--bg-secondary); padding: 2rem; border-radius: 16px; margin-bottom: 1rem;">
+            <h2>Manifest Status</h2>
+            <p id="manifestStatus">Checking...</p>
+        </div>
+
+        <div style="background: var(--bg-secondary); padding: 2rem; border-radius: 16px; margin-bottom: 1rem;">
+            <h2>Offline Support</h2>
+            <p id="offlineStatus">Checking...</p>
+        </div>
+
+        <div style="background: var(--bg-secondary); padding: 2rem; border-radius: 16px; margin-bottom: 1rem;">
+            <h2>HTTPS Status</h2>
+            <p id="httpsStatus">Checking...</p>
+        </div>
+
+        <div style="text-align: center; margin-top: 2rem;">
+            <a href="index.php" style="display: inline-block; padding: 1rem 2rem; background: var(--accent-primary); color: white; text-decoration: none; border-radius: 8px;">
+                Go to Main App
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Check Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistration().then(registration => {
+                if (registration) {
+                    document.getElementById('swStatus').innerHTML = '✅ Service Worker is registered and active';
+                    document.getElementById('swStatus').style.color = '#28a745';
+                } else {
+                    document.getElementById('swStatus').innerHTML = '⚠️ Service Worker not registered. Visit index.php first.';
+                    document.getElementById('swStatus').style.color = '#ffc107';
+                }
+            });
+        } else {
+            document.getElementById('swStatus').innerHTML = '❌ Service Worker not supported in this browser';
+            document.getElementById('swStatus').style.color = '#dc3545';
+        }
+
+        // Check PWA Support
+        if (window.matchMedia('(display-mode: standalone)').matches) {
+            document.getElementById('pwaSupport').innerHTML = '✅ App is installed and running in standalone mode';
+            document.getElementById('pwaSupport').style.color = '#28a745';
+        } else if ('BeforeInstallPromptEvent' in window) {
+            document.getElementById('pwaSupport').innerHTML = '✅ PWA installation supported';
+            document.getElementById('pwaSupport').style.color = '#28a745';
+        } else {
+            document.getElementById('pwaSupport').innerHTML = '⚠️ PWA installation may not be supported';
+            document.getElementById('pwaSupport').style.color = '#ffc107';
+        }
+
+        // Check Manifest
+        fetch('manifest.json')
+            .then(response => {
+                if (response.ok) {
+                    document.getElementById('manifestStatus').innerHTML = '✅ Manifest file found and accessible';
+                    document.getElementById('manifestStatus').style.color = '#28a745';
+                } else {
+                    document.getElementById('manifestStatus').innerHTML = '❌ Manifest file not found';
+                    document.getElementById('manifestStatus').style.color = '#dc3545';
+                }
+            })
+            .catch(() => {
+                document.getElementById('manifestStatus').innerHTML = '❌ Error loading manifest';
+                document.getElementById('manifestStatus').style.color = '#dc3545';
+            });
+
+        // Check Offline Support
+        if ('caches' in window) {
+            caches.keys().then(cacheNames => {
+                if (cacheNames.length > 0) {
+                    document.getElementById('offlineStatus').innerHTML = '✅ Offline caching enabled (' + cacheNames.length + ' cache(s))';
+                    document.getElementById('offlineStatus').style.color = '#28a745';
+                } else {
+                    document.getElementById('offlineStatus').innerHTML = '⚠️ No caches found. Visit index.php to cache files.';
+                    document.getElementById('offlineStatus').style.color = '#ffc107';
+                }
+            });
+        } else {
+            document.getElementById('offlineStatus').innerHTML = '❌ Cache API not supported';
+            document.getElementById('offlineStatus').style.color = '#dc3545';
+        }
+
+        // Check HTTPS
+        if (window.location.protocol === 'https:') {
+            document.getElementById('httpsStatus').innerHTML = '✅ Running on HTTPS (required for PWA)';
+            document.getElementById('httpsStatus').style.color = '#28a745';
+        } else if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            document.getElementById('httpsStatus').innerHTML = '⚠️ Running on HTTP (localhost). HTTPS required for production PWA.';
+            document.getElementById('httpsStatus').style.color = '#ffc107';
+        } else {
+            document.getElementById('httpsStatus').innerHTML = '❌ Running on HTTP. HTTPS is REQUIRED for PWA features!';
+            document.getElementById('httpsStatus').style.color = '#dc3545';
+        }
+
+        // Load theme
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+    </script>
+</body>
+</html>

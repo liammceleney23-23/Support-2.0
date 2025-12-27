@@ -1,0 +1,82 @@
+<svg width="800" height="400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400">
+  <defs>
+    <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0066ff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00f0ff;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="textGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#0066ff;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#00f0ff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0066ff;stop-opacity:1" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="800" height="400" fill="#0a0e27"/>
+  
+  <!-- Decorative circuit pattern -->
+  <g opacity="0.1" stroke="#00f0ff" stroke-width="1" fill="none">
+    <circle cx="100" cy="100" r="40"/>
+    <circle cx="700" cy="300" r="50"/>
+    <line x1="140" y1="100" x2="200" y2="100"/>
+    <line x1="600" y1="300" x2="650" y2="300"/>
+    <circle cx="200" cy="100" r="3" fill="#00f0ff"/>
+    <circle cx="650" cy="300" r="3" fill="#00f0ff"/>
+  </g>
+  
+  <!-- Logo Icon - Stylized Z with circuit elements -->
+  <g transform="translate(100, 150)">
+    <!-- Z shape with tech style -->
+    <path d="M 0,0 L 80,0 L 0,80 L 80,80" 
+          stroke="url(#logoGradient)" 
+          stroke-width="8" 
+          fill="none" 
+          stroke-linecap="round" 
+          stroke-linejoin="round"
+          filter="url(#glow)"/>
+    
+    <!-- Circuit nodes -->
+    <circle cx="0" cy="0" r="6" fill="url(#logoGradient)" filter="url(#glow)"/>
+    <circle cx="80" cy="0" r="6" fill="url(#logoGradient)" filter="url(#glow)"/>
+    <circle cx="0" cy="80" r="6" fill="url(#logoGradient)" filter="url(#glow)"/>
+    <circle cx="80" cy="80" r="6" fill="url(#logoGradient)" filter="url(#glow)"/>
+    
+    <!-- Center connection point -->
+    <circle cx="40" cy="40" r="8" fill="url(#logoGradient)" filter="url(#glow)"/>
+    
+    <!-- Additional tech details -->
+    <line x1="40" y1="40" x2="90" y2="40" stroke="#00f0ff" stroke-width="2" opacity="0.5"/>
+    <circle cx="90" cy="40" r="3" fill="#00f0ff" opacity="0.7"/>
+  </g>
+  
+  <!-- Company Name -->
+  <text x="220" y="200" 
+        font-family="Orbitron, monospace" 
+        font-size="72" 
+        font-weight="900" 
+        fill="url(#textGradient)"
+        filter="url(#glow)">ZOPOLLO</text>
+  
+  <text x="220" y="240" 
+        font-family="Orbitron, monospace" 
+        font-size="48" 
+        font-weight="500" 
+        fill="#00f0ff"
+        letter-spacing="8"
+        opacity="0.9">IT</text>
+  
+  <!-- Tagline -->
+  <text x="220" y="270" 
+        font-family="IBM Plex Sans, sans-serif" 
+        font-size="18" 
+        font-weight="300" 
+        fill="#9ca3af"
+        letter-spacing="2">SOLUTIONS THAT CONNECT</text>
+</svg>
