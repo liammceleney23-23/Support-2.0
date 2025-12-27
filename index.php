@@ -76,13 +76,7 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a href="#services" class="nav-link">
-                    <span class="nav-icon">🛠️</span>
-                    Services
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="#support" class="nav-link">
+                <a href="#" class="nav-link" id="openTicketModal">
                     <span class="nav-icon">🎫</span>
                     Submit Ticket
                 </a>
@@ -138,8 +132,7 @@
             <!-- Desktop Navigation -->
             <nav class="desktop-nav">
                 <a href="#home">🏠 Home</a>
-                <a href="#services">🛠️ Services</a>
-                <a href="#support">🎫 Submit Ticket</a>
+                <a href="#" id="openTicketModalDesktop">🎫 Submit Ticket</a>
                 <a href="view_tickets.php">📋 View Tickets</a>
                 <a href="#status">📊 Status</a>
                 <a href="#knowledge">📚 Knowledge</a>
@@ -159,109 +152,72 @@
             <div class="hero-content">
                 <h1>IT Support Excellence</h1>
                 <p>Professional IT solutions and 24/7 support for your business needs</p>
-                <a href="#support" class="cta-button">Submit a Support Ticket</a>
+                <button class="cta-button" id="openTicketModalHero">Submit a Support Ticket</button>
             </div>
         </section>
 
-        <!-- Services Section -->
-        <section class="services" id="services">
-            <h2 class="section-title">Our Services</h2>
-            <div class="services-grid">
-                <div class="service-card">
-                    <div class="service-icon">💻</div>
-                    <h3>Technical Support</h3>
-                    <p>24/7 technical assistance for hardware, software, and network issues. Our expert team is always ready to help.</p>
+        <!-- Ticket Modal -->
+        <div class="ticket-modal" id="ticketModal">
+            <div class="ticket-modal-content">
+                <div class="ticket-modal-header">
+                    <h2>Submit a Support Ticket</h2>
+                    <button class="ticket-modal-close" id="closeTicketModal">&times;</button>
                 </div>
+                <form class="contact-form" id="ticketForm" method="POST" action="submit_ticket.php">
+                    <div class="form-group">
+                        <label for="name">Full Name *</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
 
-                <div class="service-card">
-                    <div class="service-icon">🔒</div>
-                    <h3>Cybersecurity</h3>
-                    <p>Comprehensive security solutions to protect your data and infrastructure from threats and vulnerabilities.</p>
-                </div>
+                    <div class="form-group">
+                        <label for="email">Email Address *</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
 
-                <div class="service-card">
-                    <div class="service-icon">☁️</div>
-                    <h3>Cloud Solutions</h3>
-                    <p>Cloud migration, management, and optimization services for scalable and reliable infrastructure.</p>
-                </div>
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" id="phone" name="phone">
+                    </div>
 
-                <div class="service-card">
-                    <div class="service-icon">🔧</div>
-                    <h3>System Maintenance</h3>
-                    <p>Proactive monitoring and maintenance to keep your systems running smoothly and efficiently.</p>
-                </div>
+                    <div class="form-group">
+                        <label for="priority">Priority Level *</label>
+                        <select id="priority" name="priority" required style="width: 100%; padding: 0.875rem; background: var(--bg-tertiary); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-primary); font-family: inherit; font-size: 1rem;">
+                            <option value="low">Low - General inquiry</option>
+                            <option value="medium">Medium - Non-critical issue</option>
+                            <option value="high">High - System impacting</option>
+                            <option value="critical">Critical - Service down</option>
+                        </select>
+                    </div>
 
-                <div class="service-card">
-                    <div class="service-icon">📱</div>
-                    <h3>Mobile Device Management</h3>
-                    <p>Secure and manage mobile devices across your organization with enterprise-grade MDM solutions.</p>
-                </div>
+                    <div class="form-group">
+                        <label for="category">Issue Category *</label>
+                        <select id="category" name="category" required style="width: 100%; padding: 0.875rem; background: var(--bg-tertiary); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-primary); font-family: inherit; font-size: 1rem;">
+                            <option value="hardware">Hardware Issue</option>
+                            <option value="software">Software Problem</option>
+                            <option value="network">Network/Connectivity</option>
+                            <option value="security">Security Concern</option>
+                            <option value="email">Email Issue</option>
+                            <option value="account">Account/Password</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
 
-                <div class="service-card">
-                    <div class="service-icon">🎓</div>
-                    <h3>IT Training</h3>
-                    <p>Comprehensive training programs to empower your team with the latest IT skills and best practices.</p>
-                </div>
+                    <div class="form-group">
+                        <label for="subject">Subject *</label>
+                        <input type="text" id="subject" name="subject" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="message">Describe Your Issue *</label>
+                        <textarea id="message" name="message" required></textarea>
+                    </div>
+
+                    <button type="submit" class="submit-btn">Submit Ticket</button>
+
+                    <div id="formMessage" style="margin-top: 1rem; text-align: center; font-weight: 600;"></div>
+                </form>
             </div>
-        </section>
-
-        <!-- Submit Ticket Section -->
-        <section class="contact" id="support">
-            <h2 class="section-title">Submit a Support Ticket</h2>
-            <form class="contact-form" id="ticketForm" method="POST" action="submit_ticket.php">
-                <div class="form-group">
-                    <label for="name">Full Name *</label>
-                    <input type="text" id="name" name="name" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="email">Email Address *</label>
-                    <input type="email" id="email" name="email" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="phone">Phone Number</label>
-                    <input type="tel" id="phone" name="phone">
-                </div>
-
-                <div class="form-group">
-                    <label for="priority">Priority Level *</label>
-                    <select id="priority" name="priority" required style="width: 100%; padding: 0.875rem; background: var(--bg-tertiary); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-primary); font-family: inherit; font-size: 1rem;">
-                        <option value="low">Low - General inquiry</option>
-                        <option value="medium">Medium - Non-critical issue</option>
-                        <option value="high">High - System impacting</option>
-                        <option value="critical">Critical - Service down</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="category">Issue Category *</label>
-                    <select id="category" name="category" required style="width: 100%; padding: 0.875rem; background: var(--bg-tertiary); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-primary); font-family: inherit; font-size: 1rem;">
-                        <option value="hardware">Hardware Issue</option>
-                        <option value="software">Software Problem</option>
-                        <option value="network">Network/Connectivity</option>
-                        <option value="security">Security Concern</option>
-                        <option value="email">Email Issue</option>
-                        <option value="account">Account/Password</option>
-                        <option value="other">Other</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="subject">Subject *</label>
-                    <input type="text" id="subject" name="subject" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="message">Describe Your Issue *</label>
-                    <textarea id="message" name="message" required></textarea>
-                </div>
-
-                <button type="submit" class="submit-btn">Submit Ticket</button>
-
-                <div id="formMessage" style="margin-top: 1rem; text-align: center; font-weight: 600;"></div>
-            </form>
-        </section>
+        </div>
 
         <!-- System Status Section -->
         <section class="features" id="status">
@@ -399,13 +355,53 @@
         overlay.addEventListener('click', () => {
             sidebar.classList.remove('open');
             overlay.classList.remove('active');
+            ticketModal.classList.remove('active');
         });
 
         navLinks.forEach(link => {
             link.addEventListener('click', () => {
-                sidebar.classList.remove('open');
-                overlay.classList.remove('active');
+                if (!link.id.includes('openTicketModal')) {
+                    sidebar.classList.remove('open');
+                    overlay.classList.remove('active');
+                }
             });
+        });
+
+        // Ticket Modal
+        const ticketModal = document.getElementById('ticketModal');
+        const openTicketModal = document.getElementById('openTicketModal');
+        const openTicketModalDesktop = document.getElementById('openTicketModalDesktop');
+        const openTicketModalHero = document.getElementById('openTicketModalHero');
+        const closeTicketModal = document.getElementById('closeTicketModal');
+
+        function showTicketModal() {
+            ticketModal.classList.add('active');
+            overlay.classList.add('active');
+            sidebar.classList.remove('open');
+        }
+
+        function hideTicketModal() {
+            ticketModal.classList.remove('active');
+            overlay.classList.remove('active');
+        }
+
+        openTicketModal.addEventListener('click', (e) => {
+            e.preventDefault();
+            showTicketModal();
+        });
+
+        openTicketModalDesktop.addEventListener('click', (e) => {
+            e.preventDefault();
+            showTicketModal();
+        });
+
+        openTicketModalHero.addEventListener('click', (e) => {
+            e.preventDefault();
+            showTicketModal();
+        });
+
+        closeTicketModal.addEventListener('click', () => {
+            hideTicketModal();
         });
 
         // Theme Toggle
@@ -505,6 +501,10 @@
                     formMessage.style.color = '#28a745';
                     formMessage.textContent = result.message;
                     e.target.reset();
+                    setTimeout(() => {
+                        hideTicketModal();
+                        formMessage.textContent = '';
+                    }, 2000);
                 } else {
                     formMessage.style.color = '#dc3545';
                     formMessage.textContent = result.message;
