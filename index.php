@@ -163,7 +163,7 @@
                     <h2>Submit a Support Ticket</h2>
                     <button class="ticket-modal-close" id="closeTicketModal">&times;</button>
                 </div>
-                <form class="contact-form" id="ticketForm" method="POST" action="submit_ticket.php">
+                <form class="contact-form" id="ticketForm" method="POST" action="submit_ticket.php" enctype="multipart/form-data">
                     <div class="form-group">
                         <label for="name">Full Name *</label>
                         <input type="text" id="name" name="name" required>
@@ -210,6 +210,16 @@
                     <div class="form-group">
                         <label for="message">Describe Your Issue *</label>
                         <textarea id="message" name="message" required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="attachments">Attachments (Optional)</label>
+                        <input type="file" id="attachments" name="attachments[]" multiple
+                               accept=".jpg,.jpeg,.png,.gif,.pdf,.doc,.docx,.txt,.zip,.log"
+                               style="width: 100%; padding: 0.875rem; background: var(--bg-tertiary); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-primary); font-family: inherit; font-size: 1rem; cursor: pointer;">
+                        <small style="display: block; margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.85rem;">
+                            Max 5 files, 10MB each. Supported: Images, PDF, Documents, Text, Logs, ZIP
+                        </small>
                     </div>
 
                     <button type="submit" class="submit-btn">Submit Ticket</button>

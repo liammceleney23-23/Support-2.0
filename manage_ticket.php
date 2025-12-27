@@ -451,6 +451,31 @@ if (!isset($ticket['notes'])) {
                 <div class="message-box">
                     <?php echo nl2br(htmlspecialchars($ticket['message'])); ?>
                 </div>
+
+                <?php if (!empty($ticket['attachments'])): ?>
+                    <div style="margin-top: 1.5rem;">
+                        <h3 style="font-size: 1rem; margin-bottom: 0.75rem; color: var(--text-secondary);">
+                            📎 Attachments (<?php echo count($ticket['attachments']); ?>)
+                        </h3>
+                        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                            <?php foreach ($ticket['attachments'] as $attachment): ?>
+                                <a href="uploads/<?php echo htmlspecialchars($attachment['stored_name']); ?>"
+                                   target="_blank"
+                                   download="<?php echo htmlspecialchars($attachment['original_name']); ?>"
+                                   style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.75rem; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 8px; text-decoration: none; color: var(--text-primary); transition: var(--transition);">
+                                    <span style="font-size: 1.5rem;">📄</span>
+                                    <div style="flex: 1;">
+                                        <div style="font-weight: 500;"><?php echo htmlspecialchars($attachment['original_name']); ?></div>
+                                        <div style="font-size: 0.85rem; color: var(--text-secondary);">
+                                            <?php echo number_format($attachment['size'] / 1024, 1); ?> KB
+                                        </div>
+                                    </div>
+                                    <span style="color: var(--accent-primary);">⬇️ Download</span>
+                                </a>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                <?php endif; ?>
             </div>
 
             <div class="two-col">
@@ -475,12 +500,27 @@ if (!isset($ticket['notes'])) {
                                 <div class="response-content">
                                     <?php echo nl2br(htmlspecialchars($response['message'])); ?>
                                 </div>
+                                <?php if (!empty($response['attachments'])): ?>
+                                    <div style="margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--border-color);">
+                                        <div style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.5rem;">
+                                            📎 Attachments:
+                                        </div>
+                                        <?php foreach ($response['attachments'] as $attachment): ?>
+                                            <a href="uploads/<?php echo htmlspecialchars($attachment['stored_name']); ?>"
+                                               target="_blank"
+                                               download="<?php echo htmlspecialchars($attachment['original_name']); ?>"
+                                               style="display: inline-block; margin-right: 0.5rem; margin-bottom: 0.5rem; padding: 0.5rem 0.75rem; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 6px; text-decoration: none; color: var(--accent-primary); font-size: 0.9rem;">
+                                                📄 <?php echo htmlspecialchars($attachment['original_name']); ?>
+                                            </a>
+                                        <?php endforeach; ?>
+                                    </div>
+                                <?php endif; ?>
                             </div>
                         <?php endforeach; ?>
                     <?php endif; ?>
 
                     <div class="action-form">
-                        <form id="responseForm">
+                        <form id="responseForm" enctype="multipart/form-data">
                             <input type="hidden" name="ticket_id" value="<?php echo htmlspecialchars($ticket_id); ?>">
                             <input type="hidden" name="action" value="add_response">
 
@@ -488,6 +528,16 @@ if (!isset($ticket['notes'])) {
                                 <label for="responseMessage">Send Response to Customer</label>
                                 <textarea id="responseMessageInput" name="message" required
                                           placeholder="Type your response to the customer..."></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="responseAttachments">Attachments (Optional)</label>
+                                <input type="file" id="responseAttachments" name="attachments[]" multiple
+                                       accept=".jpg,.jpeg,.png,.gif,.pdf,.doc,.docx,.txt,.zip,.log"
+                                       style="width: 100%; padding: 0.875rem; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-primary); font-family: inherit; font-size: 1rem; cursor: pointer;">
+                                <small style="display: block; margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.85rem;">
+                                    Max 5 files, 10MB each
+                                </small>
                             </div>
 
                             <button type="submit" class="btn btn-primary">📧 Send Response</button>

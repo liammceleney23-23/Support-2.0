@@ -1,10 +1,6 @@
 <?php
 header('Content-Type: application/json');
 
-// Enable error reporting for debugging (disable in production)
-// error_reporting(E_ALL);
-// ini_set('display_errors', 1);
-
 // Function to sanitize input
 function sanitize_input($data) {
     $data = trim($data);
@@ -69,6 +65,72 @@ if (!in_array($category, $valid_categories)) {
 $ticket_id = 'TICK-' . strtoupper(uniqid());
 $timestamp = date('Y-m-d H:i:s');
 
+// Create uploads directory if it doesn't exist
+$upload_dir = 'uploads/';
+if (!file_exists($upload_dir)) {
+    mkdir($upload_dir, 0755, true);
+}
+
+// Handle file uploads
+$attachments = [];
+if (isset($_FILES['attachments']) && !empty($_FILES['attachments']['name'][0])) {
+    $allowed_extensions = ['jpg', 'jpeg', 'png', 'gif', 'pdf', 'doc', 'docx', 'txt', 'zip', 'log'];
+    $max_file_size = 10 * 1024 * 1024; // 10MB
+    $max_files = 5;
+
+    $file_count = count($_FILES['attachments']['name']);
+
+    if ($file_count > $max_files) {
+        $response['message'] = "Maximum $max_files files allowed.";
+        echo json_encode($response);
+        exit;
+    }
+
+    for ($i = 0; $i < $file_count; $i++) {
+        if ($_FILES['attachments']['error'][$i] === UPLOAD_ERR_OK) {
+            $file_name = $_FILES['attachments']['name'][$i];
+            $file_size = $_FILES['attachments']['size'][$i];
+            $file_tmp = $_FILES['attachments']['tmp_name'][$i];
+
+            // Get file extension
+            $file_ext = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+
+            // Validate extension
+            if (!in_array($file_ext, $allowed_extensions)) {
+                $response['message'] = "File type not allowed: $file_name";
+                echo json_encode($response);
+                exit;
+            }
+
+            // Validate file size
+            if ($file_size > $max_file_size) {
+                $response['message'] = "File too large: $file_name (max 10MB)";
+                echo json_encode($response);
+                exit;
+            }
+
+            // Create unique filename
+            $unique_filename = $ticket_id . '_' . time() . '_' . $i . '.' . $file_ext;
+            $destination = $upload_dir . $unique_filename;
+
+            // Move uploaded file
+            if (move_uploaded_file($file_tmp, $destination)) {
+                $attachments[] = [
+                    'original_name' => $file_name,
+                    'stored_name' => $unique_filename,
+                    'size' => $file_size,
+                    'type' => $file_ext,
+                    'uploaded_at' => $timestamp
+                ];
+            } else {
+                $response['message'] = "Failed to upload file: $file_name";
+                echo json_encode($response);
+                exit;
+            }
+        }
+    }
+}
+
 // Prepare ticket data
 $ticket_data = [
     'ticket_id' => $ticket_id,
@@ -81,6 +143,7 @@ $ticket_data = [
     'subject' => $subject,
     'message' => $message,
     'status' => 'Open',
+    'attachments' => $attachments,
     'ip_address' => $_SERVER['REMOTE_ADDR']
 ];
 
@@ -102,75 +165,11 @@ $tickets[] = $ticket_data;
 
 // Save tickets
 if (file_put_contents($tickets_file, json_encode($tickets, JSON_PRETTY_PRINT))) {
-    // Send email notification (optional - configure SMTP settings)
-    $to = 'support@zopollo.com'; // Change to your support email
-    $email_subject = "New Support Ticket: $ticket_id - $subject";
-    $email_message = "
-New Support Ticket Received
-
-Ticket ID: $ticket_id
-Timestamp: $timestamp
-Priority: " . strtoupper($priority) . "
-Category: " . ucfirst($category) . "
-
-Customer Information:
-Name: $name
-Email: $email
-Phone: $phone
-
-Subject: $subject
-
-Message:
-$message
-
----
-This is an automated notification from Zopollo IT Support System.
-    ";
-
-    $email_headers = "From: noreply@zopollo.com\r\n";
-    $email_headers .= "Reply-To: $email\r\n";
-    $email_headers .= "X-Mailer: PHP/" . phpversion();
-
-    // Uncomment to enable email notifications (requires mail server configuration)
-    // mail($to, $email_subject, $email_message, $email_headers);
-
-    // Send confirmation email to customer
-    $customer_subject = "Ticket Confirmation: $ticket_id";
-    $customer_message = "
-Dear $name,
-
-Thank you for contacting Zopollo IT Support. Your support ticket has been received and assigned the following ID: $ticket_id
-
-Ticket Details:
-Priority: " . strtoupper($priority) . "
-Category: " . ucfirst($category) . "
-Subject: $subject
-
-Our team will review your request and respond as soon as possible based on the priority level.
-
-Priority Response Times:
-- Critical: Within 1 hour
-- High: Within 4 hours
-- Medium: Within 24 hours
-- Low: Within 48 hours
-
-You can reference ticket ID $ticket_id when following up on this request.
-
-Best regards,
-Zopollo IT Support Team
-24/7 Support: +1 (234) 567-890
-Email: support@zopollo.com
-    ";
-
-    $customer_headers = "From: support@zopollo.com\r\n";
-    $customer_headers .= "Reply-To: support@zopollo.com\r\n";
-    $customer_headers .= "X-Mailer: PHP/" . phpversion();
-
-    // Uncomment to enable customer confirmation emails
-    // mail($email, $customer_subject, $customer_message, $customer_headers);
+    $attachment_count = count($attachments);
+    $attachment_msg = $attachment_count > 0 ? " with $attachment_count attachment(s)" : "";
 
     $response['success'] = true;
-    $response['message'] = "Ticket submitted successfully! Your ticket ID is: $ticket_id. We'll respond within " . getResponseTime($priority) . ".";
+    $response['message'] = "Ticket submitted successfully$attachment_msg! Your ticket ID is: $ticket_id. We'll respond within " . getResponseTime($priority) . ".";
     $response['ticket_id'] = $ticket_id;
 } else {
     $response['message'] = 'Failed to save ticket. Please try again or contact support directly.';
