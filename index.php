@@ -21,6 +21,9 @@
 
     <!-- Styles -->
     <link rel="stylesheet" href="styles.css">
+
+    <!-- In-App Notifications -->
+    <script src="in-app-notifications.js"></script>
 </head>
 <body>
     <!-- Overlay -->
@@ -597,6 +600,12 @@
 
             const formData = new FormData(e.target);
             const formMessage = document.getElementById('formMessage');
+
+            // Store user email for in-app notifications
+            const email = formData.get('email');
+            if (email && window.inAppNotifications) {
+                window.inAppNotifications.setUserEmail(email);
+            }
 
             try {
                 const response = await fetch('submit_ticket.php', {

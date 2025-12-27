@@ -1,4 +1,18 @@
-# Quick Start Guide - Push Notifications
+# Quick Start Guide - Notifications
+
+## 📱 Two Notification Systems
+
+### 1. In-App Notifications (All Devices - Including iOS!)
+✅ **Works on iPhone/iOS!**
+- Receive notifications while the PWA is open
+- Beautiful slide-in notifications
+- Click to open specific tickets
+- Checks for updates every 30 seconds
+- **No setup required** - works immediately!
+
+### 2. Push Notifications (Android Only)
+- Receive notifications even when app is closed
+- Requires composer installation
 
 ## 🚀 Get Started in 3 Steps
 
@@ -50,8 +64,9 @@ http://your-domain/send_test_notification.php?ticket_id=TEST-123
 
 ## 📖 Full Documentation
 
-- **[SETUP_INSTRUCTIONS.md](SETUP_INSTRUCTIONS.md)** - Complete setup guide
-- **[NOTIFICATIONS_README.md](NOTIFICATIONS_README.md)** - Detailed documentation
+- **[IN_APP_NOTIFICATIONS.md](IN_APP_NOTIFICATIONS.md)** - In-app notification system (iOS compatible!)
+- **[SETUP_INSTRUCTIONS.md](SETUP_INSTRUCTIONS.md)** - Push notification setup (Android)
+- **[NOTIFICATIONS_README.md](NOTIFICATIONS_README.md)** - Complete technical documentation
 
 ## 🆘 Common Issues
 

@@ -155,6 +155,7 @@ switch ($action) {
         }
 
         $tickets[$ticket_index]['status'] = $status;
+        $tickets[$ticket_index]['status_updated_at'] = date('Y-m-d H:i:s');
         $success_message = 'Status updated successfully';
         break;
 
