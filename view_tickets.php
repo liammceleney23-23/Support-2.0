@@ -13,8 +13,21 @@ if (file_exists($tickets_file)) {
     }
 }
 
+// Separate tickets into open and closed
+$open_tickets = [];
+$closed_tickets = [];
+
+foreach ($tickets as $ticket) {
+    if ($ticket['status'] === 'Closed') {
+        $closed_tickets[] = $ticket;
+    } else {
+        $open_tickets[] = $ticket;
+    }
+}
+
 // Reverse to show newest first
-$tickets = array_reverse($tickets);
+$open_tickets = array_reverse($open_tickets);
+$closed_tickets = array_reverse($closed_tickets);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -135,6 +148,67 @@ $tickets = array_reverse($tickets);
         .back-link:hover {
             background: var(--accent-secondary);
             transform: translateY(-2px);
+        }
+        .section-header {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem 2rem;
+            margin-bottom: 1.5rem;
+            margin-top: 2rem;
+        }
+        .section-header h2 {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.5rem;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .ticket-card.minimized {
+            padding: 1rem 1.5rem;
+        }
+        .ticket-card.minimized .ticket-details {
+            display: none;
+        }
+        .ticket-card.minimized:hover {
+            transform: none;
+        }
+        .minimized-view {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .minimized-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .expand-btn {
+            padding: 0.5rem 1rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+        .expand-btn:hover {
+            background: var(--accent-primary);
+            color: white;
+            border-color: var(--accent-primary);
+        }
+        .status-closed {
+            background: #6c757d;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
         }
     </style>
 </head>
@@ -275,16 +349,16 @@ $tickets = array_reverse($tickets);
                     <div style="color: var(--text-secondary); margin-top: 0.5rem;">Total Tickets</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-number"><?php echo count(array_filter($tickets, function($t) { return $t['priority'] === 'critical'; })); ?></div>
-                    <div style="color: var(--text-secondary); margin-top: 0.5rem;">Critical</div>
+                    <div class="stat-number"><?php echo count($open_tickets); ?></div>
+                    <div style="color: var(--text-secondary); margin-top: 0.5rem;">Open Tickets</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-number"><?php echo count(array_filter($tickets, function($t) { return $t['priority'] === 'high'; })); ?></div>
-                    <div style="color: var(--text-secondary); margin-top: 0.5rem;">High Priority</div>
+                    <div class="stat-number"><?php echo count($closed_tickets); ?></div>
+                    <div style="color: var(--text-secondary); margin-top: 0.5rem;">Closed Tickets</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-number"><?php echo count(array_filter($tickets, function($t) { return $t['priority'] === 'medium'; })); ?></div>
-                    <div style="color: var(--text-secondary); margin-top: 0.5rem;">Medium Priority</div>
+                    <div class="stat-number"><?php echo count(array_filter($tickets, function($t) { return $t['priority'] === 'critical' && $t['status'] !== 'Closed'; })); ?></div>
+                    <div style="color: var(--text-secondary); margin-top: 0.5rem;">Critical Open</div>
                 </div>
             </div>
         </div>
@@ -296,66 +370,166 @@ $tickets = array_reverse($tickets);
                 <p>Submitted support tickets will appear here.</p>
             </div>
         <?php else: ?>
-            <?php foreach ($tickets as $ticket): ?>
-                <div class="ticket-card">
-                    <div style="display: flex; justify-content: space-between; align-items: start; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem;">
-                        <div>
-                            <div class="ticket-id"><?php echo htmlspecialchars($ticket['ticket_id']); ?></div>
-                            <div style="margin-top: 0.5rem;">
-                                <span class="priority-badge priority-<?php echo htmlspecialchars($ticket['priority']); ?>">
-                                    <?php echo htmlspecialchars($ticket['priority']); ?>
-                                </span>
-                                <span style="margin-left: 0.5rem; color: var(--text-secondary);">
-                                    <?php echo ucfirst(htmlspecialchars($ticket['category'])); ?>
+
+            <!-- Open Tickets Section -->
+            <div class="section-header">
+                <h2>
+                    <span>🎫</span>
+                    <span>Open Tickets</span>
+                    <span style="font-size: 1rem; font-weight: 400; color: var(--text-secondary); margin-left: 0.5rem;">
+                        (<?php echo count($open_tickets); ?>)
+                    </span>
+                </h2>
+            </div>
+
+            <?php if (empty($open_tickets)): ?>
+                <div class="no-tickets" style="padding: 2rem;">
+                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">✅</div>
+                    <p style="color: var(--text-secondary);">No open tickets - all clear!</p>
+                </div>
+            <?php else: ?>
+                <?php foreach ($open_tickets as $ticket): ?>
+                    <div class="ticket-card">
+                        <div style="display: flex; justify-content: space-between; align-items: start; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem;">
+                            <div>
+                                <div class="ticket-id"><?php echo htmlspecialchars($ticket['ticket_id']); ?></div>
+                                <div style="margin-top: 0.5rem;">
+                                    <span class="priority-badge priority-<?php echo htmlspecialchars($ticket['priority']); ?>">
+                                        <?php echo htmlspecialchars($ticket['priority']); ?>
+                                    </span>
+                                    <span style="margin-left: 0.5rem; color: var(--text-secondary);">
+                                        <?php echo ucfirst(htmlspecialchars($ticket['category'])); ?>
+                                    </span>
+                                </div>
+                            </div>
+                            <div style="text-align: right; font-size: 0.85rem; color: var(--text-secondary);">
+                                <?php echo htmlspecialchars($ticket['timestamp']); ?>
+                            </div>
+                        </div>
+
+                        <h3 style="margin-bottom: 1rem; font-size: 1.25rem;">
+                            <?php echo htmlspecialchars($ticket['subject']); ?>
+                        </h3>
+
+                        <div class="ticket-grid">
+                            <div class="ticket-info">
+                                <strong>Name:</strong><br>
+                                <?php echo htmlspecialchars($ticket['name']); ?>
+                            </div>
+                            <div class="ticket-info">
+                                <strong>Email:</strong><br>
+                                <a href="mailto:<?php echo htmlspecialchars($ticket['email']); ?>" style="color: var(--accent-primary);">
+                                    <?php echo htmlspecialchars($ticket['email']); ?>
+                                </a>
+                            </div>
+                            <div class="ticket-info">
+                                <strong>Phone:</strong><br>
+                                <?php echo !empty($ticket['phone']) ? htmlspecialchars($ticket['phone']) : 'N/A'; ?>
+                            </div>
+                            <div class="ticket-info">
+                                <strong>Status:</strong><br>
+                                <span style="color: var(--accent-primary); font-weight: 600;">
+                                    <?php echo htmlspecialchars($ticket['status']); ?>
                                 </span>
                             </div>
                         </div>
-                        <div style="text-align: right; font-size: 0.85rem; color: var(--text-secondary);">
-                            <?php echo htmlspecialchars($ticket['timestamp']); ?>
-                        </div>
-                    </div>
 
-                    <h3 style="margin-bottom: 1rem; font-size: 1.25rem;">
-                        <?php echo htmlspecialchars($ticket['subject']); ?>
-                    </h3>
-
-                    <div class="ticket-grid">
-                        <div class="ticket-info">
-                            <strong>Name:</strong><br>
-                            <?php echo htmlspecialchars($ticket['name']); ?>
+                        <div class="ticket-message">
+                            <strong>Message:</strong><br>
+                            <?php echo nl2br(htmlspecialchars($ticket['message'])); ?>
                         </div>
-                        <div class="ticket-info">
-                            <strong>Email:</strong><br>
-                            <a href="mailto:<?php echo htmlspecialchars($ticket['email']); ?>" style="color: var(--accent-primary);">
-                                <?php echo htmlspecialchars($ticket['email']); ?>
+
+                        <div style="margin-top: 1.5rem;">
+                            <a href="manage_ticket.php?id=<?php echo urlencode($ticket['ticket_id']); ?>"
+                               class="back-link"
+                               style="display: inline-block; text-decoration: none;">
+                                🔧 Manage Ticket
                             </a>
                         </div>
-                        <div class="ticket-info">
-                            <strong>Phone:</strong><br>
-                            <?php echo !empty($ticket['phone']) ? htmlspecialchars($ticket['phone']) : 'N/A'; ?>
-                        </div>
-                        <div class="ticket-info">
-                            <strong>Status:</strong><br>
-                            <span style="color: var(--accent-primary); font-weight: 600;">
-                                <?php echo htmlspecialchars($ticket['status']); ?>
-                            </span>
-                        </div>
                     </div>
+                <?php endforeach; ?>
+            <?php endif; ?>
 
-                    <div class="ticket-message">
-                        <strong>Message:</strong><br>
-                        <?php echo nl2br(htmlspecialchars($ticket['message'])); ?>
-                    </div>
-
-                    <div style="margin-top: 1.5rem;">
-                        <a href="manage_ticket.php?id=<?php echo urlencode($ticket['ticket_id']); ?>"
-                           class="back-link"
-                           style="display: inline-block; text-decoration: none;">
-                            🔧 Manage Ticket
-                        </a>
-                    </div>
+            <!-- Closed Tickets Section -->
+            <?php if (!empty($closed_tickets)): ?>
+                <div class="section-header">
+                    <h2>
+                        <span>📦</span>
+                        <span>Closed Tickets</span>
+                        <span style="font-size: 1rem; font-weight: 400; color: var(--text-secondary); margin-left: 0.5rem;">
+                            (<?php echo count($closed_tickets); ?>)
+                        </span>
+                    </h2>
                 </div>
-            <?php endforeach; ?>
+
+                <?php foreach ($closed_tickets as $index => $ticket): ?>
+                    <div class="ticket-card minimized" id="ticket-<?php echo $index; ?>">
+                        <!-- Minimized View -->
+                        <div class="minimized-view">
+                            <div class="minimized-info">
+                                <div class="ticket-id" style="font-size: 1rem;"><?php echo htmlspecialchars($ticket['ticket_id']); ?></div>
+                                <span class="status-closed">Closed</span>
+                                <h3 style="margin: 0; font-size: 1rem; font-weight: 500;">
+                                    <?php echo htmlspecialchars($ticket['subject']); ?>
+                                </h3>
+                                <span style="color: var(--text-secondary); font-size: 0.85rem;">
+                                    <?php echo htmlspecialchars($ticket['timestamp']); ?>
+                                </span>
+                            </div>
+                            <button class="expand-btn" onclick="toggleTicket(<?php echo $index; ?>)">
+                                <span class="expand-text">Expand</span>
+                            </button>
+                        </div>
+
+                        <!-- Full Details (Hidden by default) -->
+                        <div class="ticket-details">
+                            <div style="display: flex; justify-content: space-between; align-items: start; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color);">
+                                <div>
+                                    <div style="margin-top: 0.5rem;">
+                                        <span class="priority-badge priority-<?php echo htmlspecialchars($ticket['priority']); ?>">
+                                            <?php echo htmlspecialchars($ticket['priority']); ?>
+                                        </span>
+                                        <span style="margin-left: 0.5rem; color: var(--text-secondary);">
+                                            <?php echo ucfirst(htmlspecialchars($ticket['category'])); ?>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="ticket-grid">
+                                <div class="ticket-info">
+                                    <strong>Name:</strong><br>
+                                    <?php echo htmlspecialchars($ticket['name']); ?>
+                                </div>
+                                <div class="ticket-info">
+                                    <strong>Email:</strong><br>
+                                    <a href="mailto:<?php echo htmlspecialchars($ticket['email']); ?>" style="color: var(--accent-primary);">
+                                        <?php echo htmlspecialchars($ticket['email']); ?>
+                                    </a>
+                                </div>
+                                <div class="ticket-info">
+                                    <strong>Phone:</strong><br>
+                                    <?php echo !empty($ticket['phone']) ? htmlspecialchars($ticket['phone']) : 'N/A'; ?>
+                                </div>
+                            </div>
+
+                            <div class="ticket-message">
+                                <strong>Message:</strong><br>
+                                <?php echo nl2br(htmlspecialchars($ticket['message'])); ?>
+                            </div>
+
+                            <div style="margin-top: 1.5rem;">
+                                <a href="manage_ticket.php?id=<?php echo urlencode($ticket['ticket_id']); ?>"
+                                   class="back-link"
+                                   style="display: inline-block; text-decoration: none;">
+                                    🔧 Manage Ticket
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            <?php endif; ?>
+
         <?php endif; ?>
         </div>
     </main>
@@ -416,6 +590,21 @@ $tickets = array_reverse($tickets);
             } else {
                 themeIcon.textContent = '🌙';
                 themeText.textContent = 'Dark';
+            }
+        }
+
+        // Toggle closed ticket expansion
+        function toggleTicket(index) {
+            const ticketCard = document.getElementById('ticket-' + index);
+            const expandBtn = ticketCard.querySelector('.expand-btn');
+            const expandText = expandBtn.querySelector('.expand-text');
+
+            if (ticketCard.classList.contains('minimized')) {
+                ticketCard.classList.remove('minimized');
+                expandText.textContent = 'Collapse';
+            } else {
+                ticketCard.classList.add('minimized');
+                expandText.textContent = 'Expand';
             }
         }
     </script>
