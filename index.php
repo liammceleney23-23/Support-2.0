@@ -96,6 +96,16 @@
                 <img src="zopollo-logo-compact.svg" alt="Zopollo IT">
             </div>
 
+            <!-- Desktop Navigation -->
+            <nav class="desktop-nav">
+                <a href="#home">🏠 Home</a>
+                <a href="#services">🛠️ Services</a>
+                <a href="#support">🎫 Submit Ticket</a>
+                <a href="#status">📊 Status</a>
+                <a href="#knowledge">📚 Knowledge</a>
+                <a href="#contact">📧 Contact</a>
+            </nav>
+
             <div class="header-actions">
                 <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
                     <span id="themeIcon">🌙</span>
@@ -387,16 +397,26 @@
             }
         }
 
-        // PWA Installation
+        // PWA Installation (only show on mobile)
         let deferredPrompt;
         const installPrompt = document.getElementById('installPrompt');
         const installBtn = document.getElementById('installBtn');
         const dismissBtn = document.getElementById('dismissBtn');
 
+        // Check if device is mobile
+        function isMobileDevice() {
+            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+                || window.innerWidth <= 768;
+        }
+
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
-            installPrompt.classList.add('show');
+
+            // Only show install prompt on mobile devices
+            if (isMobileDevice()) {
+                installPrompt.classList.add('show');
+            }
         });
 
         installBtn.addEventListener('click', async () => {

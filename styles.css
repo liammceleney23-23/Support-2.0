@@ -206,7 +206,7 @@ body {
     background: none;
     border: none;
     cursor: pointer;
-    display: flex;
+    display: none; /* Hidden on desktop */
     flex-direction: column;
     gap: 6px;
     padding: 0.75rem;
@@ -224,6 +224,52 @@ body {
     background: var(--text-primary);
     border-radius: 2px;
     transition: var(--transition);
+}
+
+/* Desktop Navigation */
+.desktop-nav {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex: 1;
+    justify-content: center;
+}
+
+.desktop-nav a {
+    color: var(--text-primary);
+    text-decoration: none;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    position: relative;
+    white-space: nowrap;
+    font-size: 0.95rem;
+}
+
+.desktop-nav a:hover {
+    background: var(--bg-tertiary);
+    color: var(--accent-primary);
+    transform: translateY(-2px);
+}
+
+.desktop-nav a::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+    transition: var(--transition);
+    transform: translateX(-50%);
+}
+
+.desktop-nav a:hover::after {
+    width: 80%;
 }
 
 .header-actions {
@@ -733,6 +779,16 @@ body {
 
     .header-logo {
         gap: 0.5rem;
+    }
+
+    /* Show hamburger menu on mobile */
+    .hamburger {
+        display: flex;
+    }
+
+    /* Hide desktop navigation on mobile */
+    .desktop-nav {
+        display: none;
     }
 }
 
