@@ -694,7 +694,22 @@ if (!isset($ticket['notes'])) {
                     body: formData
                 });
 
-                const result = await response.json();
+                // Check if response is OK
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                // Get response text first to debug
+                const text = await response.text();
+
+                // Try to parse as JSON
+                let result;
+                try {
+                    result = JSON.parse(text);
+                } catch (e) {
+                    console.error('Failed to parse JSON:', text);
+                    throw new Error('Invalid JSON response from server');
+                }
 
                 if (result.success) {
                     messageDiv.innerHTML = '<div class="success-message">' + result.message + '</div>';
@@ -705,6 +720,7 @@ if (!isset($ticket['notes'])) {
                     messageDiv.innerHTML = '<div class="error-message">' + result.message + '</div>';
                 }
             } catch (error) {
+                console.error('Response form error:', error);
                 messageDiv.innerHTML = '<div class="error-message">An error occurred. Please try again.</div>';
             }
         });
@@ -721,7 +737,18 @@ if (!isset($ticket['notes'])) {
                     body: formData
                 });
 
-                const result = await response.json();
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const text = await response.text();
+                let result;
+                try {
+                    result = JSON.parse(text);
+                } catch (e) {
+                    console.error('Failed to parse JSON:', text);
+                    throw new Error('Invalid JSON response from server');
+                }
 
                 if (result.success) {
                     messageDiv.innerHTML = '<div class="success-message">' + result.message + '</div>';
@@ -732,6 +759,7 @@ if (!isset($ticket['notes'])) {
                     messageDiv.innerHTML = '<div class="error-message">' + result.message + '</div>';
                 }
             } catch (error) {
+                console.error('Note form error:', error);
                 messageDiv.innerHTML = '<div class="error-message">An error occurred. Please try again.</div>';
             }
         });
@@ -748,7 +776,18 @@ if (!isset($ticket['notes'])) {
                     body: formData
                 });
 
-                const result = await response.json();
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const text = await response.text();
+                let result;
+                try {
+                    result = JSON.parse(text);
+                } catch (e) {
+                    console.error('Failed to parse JSON:', text);
+                    throw new Error('Invalid JSON response from server');
+                }
 
                 if (result.success) {
                     messageDiv.innerHTML = '<div class="success-message">' + result.message + '</div>';
@@ -759,6 +798,7 @@ if (!isset($ticket['notes'])) {
                     messageDiv.innerHTML = '<div class="error-message">' + result.message + '</div>';
                 }
             } catch (error) {
+                console.error('Status form error:', error);
                 messageDiv.innerHTML = '<div class="error-message">An error occurred. Please try again.</div>';
             }
         });

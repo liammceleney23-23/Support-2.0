@@ -290,19 +290,15 @@ function sendPushNotification($ticket_id, $action, $ticket_data) {
             }
 
         } catch (Exception $e) {
-            // Log error
-            error_log("Push notification error: " . $e->getMessage());
-
-            // Fallback to logging
+            // Fallback to logging (don't use error_log as it might output)
             $log_file = 'notifications.log';
             $log_entry = date('Y-m-d H:i:s') . " - Notification ERROR for $ticket_id: " . $e->getMessage() . "\n";
-            file_put_contents($log_file, $log_entry, FILE_APPEND);
+            @file_put_contents($log_file, $log_entry, FILE_APPEND);
         }
     } else {
         // Web-push library not installed - just log the attempt
         $log_file = 'notifications.log';
         $log_entry = date('Y-m-d H:i:s') . " - Notification queued (no web-push library) for $ticket_id: $body\n";
-        file_put_contents($log_file, $log_entry, FILE_APPEND);
+        @file_put_contents($log_file, $log_entry, FILE_APPEND);
     }
 }
-?>
