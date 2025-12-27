@@ -166,35 +166,51 @@ switch ($action) {
 
 // Save tickets
 if (file_put_contents($tickets_file, json_encode($tickets, JSON_PRETTY_PRINT))) {
-    // Send push notification for responses and status changes
+    // Send push notification for responses and status changes (don't let errors affect response)
     if ($action === 'add_response' || $action === 'update_status') {
-        sendPushNotification($ticket_id, $action, $tickets[$ticket_index]);
+        try {
+            @sendPushNotification($ticket_id, $action, $tickets[$ticket_index]);
+        } catch (Exception $e) {
+            // Silently fail - notification is not critical
+        }
     }
 
     echo json_encode([
         'success' => true,
         'message' => $success_message
     ]);
+    exit; // Important: exit after sending response
 } else {
     echo json_encode([
         'success' => false,
         'message' => 'Failed to save ticket data'
     ]);
+    exit; // Important: exit after sending response
 }
 
 // Function to send push notifications
 function sendPushNotification($ticket_id, $action, $ticket_data) {
-    // Load subscriptions
-    $subscriptions_file = 'subscriptions.json';
-    if (!file_exists($subscriptions_file)) {
-        return; // No subscriptions to notify
-    }
+    // Suppress all errors and warnings to prevent output interference
+    $old_error_level = error_reporting(0);
 
-    $subscriptions_content = file_get_contents($subscriptions_file);
-    $subscriptions = json_decode($subscriptions_content, true);
+    try {
+        // Load subscriptions
+        $subscriptions_file = 'subscriptions.json';
+        if (!file_exists($subscriptions_file)) {
+            error_reporting($old_error_level);
+            return; // No subscriptions to notify
+        }
 
-    if (!is_array($subscriptions) || empty($subscriptions)) {
-        return; // No subscriptions to notify
+        $subscriptions_content = @file_get_contents($subscriptions_file);
+        $subscriptions = @json_decode($subscriptions_content, true);
+
+        if (!is_array($subscriptions) || empty($subscriptions)) {
+            error_reporting($old_error_level);
+            return; // No subscriptions to notify
+        }
+    } catch (Exception $e) {
+        error_reporting($old_error_level);
+        return;
     }
 
     // Create notification payload based on action
@@ -301,4 +317,7 @@ function sendPushNotification($ticket_id, $action, $ticket_data) {
         $log_entry = date('Y-m-d H:i:s') . " - Notification queued (no web-push library) for $ticket_id: $body\n";
         @file_put_contents($log_file, $log_entry, FILE_APPEND);
     }
+
+    // Restore error reporting
+    error_reporting($old_error_level);
 }
