@@ -53,8 +53,27 @@ if (!in_array($priority, $valid_priorities)) {
     exit;
 }
 
-// Validate category
-$valid_categories = ['hardware', 'software', 'network', 'security', 'email', 'account', 'other'];
+// Load and validate category
+$categories_file = 'categories.json';
+$valid_categories = [];
+
+if (file_exists($categories_file)) {
+    $categories_content = file_get_contents($categories_file);
+    $categories = json_decode($categories_content, true);
+    if (is_array($categories)) {
+        foreach ($categories as $cat) {
+            if ($cat['active']) {
+                $valid_categories[] = $cat['id'];
+            }
+        }
+    }
+}
+
+// Fallback to default categories if none exist
+if (empty($valid_categories)) {
+    $valid_categories = ['hardware', 'software', 'network', 'security', 'email', 'account', 'other'];
+}
+
 if (!in_array($category, $valid_categories)) {
     $response['message'] = 'Invalid category.';
     echo json_encode($response);

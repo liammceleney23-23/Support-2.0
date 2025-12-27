@@ -192,13 +192,36 @@
                     <div class="form-group">
                         <label for="category">Issue Category *</label>
                         <select id="category" name="category" required style="width: 100%; padding: 0.875rem; background: var(--bg-tertiary); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-primary); font-family: inherit; font-size: 1rem;">
-                            <option value="hardware">Hardware Issue</option>
-                            <option value="software">Software Problem</option>
-                            <option value="network">Network/Connectivity</option>
-                            <option value="security">Security Concern</option>
-                            <option value="email">Email Issue</option>
-                            <option value="account">Account/Password</option>
-                            <option value="other">Other</option>
+                            <?php
+                            // Load categories
+                            $categories_file = 'categories.json';
+                            $categories = [];
+
+                            if (file_exists($categories_file)) {
+                                $categories_content = file_get_contents($categories_file);
+                                $categories = json_decode($categories_content, true);
+                            }
+
+                            // Fallback to default if no categories
+                            if (empty($categories)) {
+                                $categories = [
+                                    ['id' => 'hardware', 'name' => 'Hardware Issue', 'active' => true],
+                                    ['id' => 'software', 'name' => 'Software Problem', 'active' => true],
+                                    ['id' => 'network', 'name' => 'Network/Connectivity', 'active' => true],
+                                    ['id' => 'security', 'name' => 'Security Concern', 'active' => true],
+                                    ['id' => 'email', 'name' => 'Email Issue', 'active' => true],
+                                    ['id' => 'account', 'name' => 'Account/Password', 'active' => true],
+                                    ['id' => 'other', 'name' => 'Other', 'active' => true]
+                                ];
+                            }
+
+                            // Display only active categories
+                            foreach ($categories as $category) {
+                                if ($category['active']) {
+                                    echo '<option value="' . htmlspecialchars($category['id']) . '">' . htmlspecialchars($category['name']) . '</option>';
+                                }
+                            }
+                            ?>
                         </select>
                     </div>
 
