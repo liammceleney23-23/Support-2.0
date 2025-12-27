@@ -192,13 +192,7 @@ $tickets = array_reverse($tickets);
                 </a>
             </li>
             <li class="nav-item">
-                <a href="index.php#services" class="nav-link">
-                    <span class="nav-icon">🛠️</span>
-                    Services
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="index.php#support" class="nav-link">
+                <a href="index.php" class="nav-link">
                     <span class="nav-icon">🎫</span>
                     Submit Ticket
                 </a>
@@ -254,8 +248,7 @@ $tickets = array_reverse($tickets);
             <!-- Desktop Navigation -->
             <nav class="desktop-nav">
                 <a href="index.php#home">🏠 Home</a>
-                <a href="index.php#services">🛠️ Services</a>
-                <a href="index.php#support">🎫 Submit Ticket</a>
+                <a href="index.php">🎫 Submit Ticket</a>
                 <a href="view_tickets.php">📋 View Tickets</a>
                 <a href="index.php#status">📊 Status</a>
                 <a href="index.php#knowledge">📚 Knowledge</a>
@@ -352,6 +345,14 @@ $tickets = array_reverse($tickets);
                     <div class="ticket-message">
                         <strong>Message:</strong><br>
                         <?php echo nl2br(htmlspecialchars($ticket['message'])); ?>
+                    </div>
+
+                    <div style="margin-top: 1.5rem;">
+                        <a href="manage_ticket.php?id=<?php echo urlencode($ticket['ticket_id']); ?>"
+                           class="back-link"
+                           style="display: inline-block; text-decoration: none;">
+                            🔧 Manage Ticket
+                        </a>
                     </div>
                 </div>
             <?php endforeach; ?>
