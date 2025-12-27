@@ -701,13 +701,22 @@ if (!isset($ticket['notes'])) {
 
                 // Get response text first to debug
                 const text = await response.text();
+                console.log('=== RESPONSE DEBUG ===');
+                console.log('Raw response:', text);
+                console.log('Response length:', text.length);
+                console.log('First 200 chars:', text.substring(0, 200));
+                console.log('Last 200 chars:', text.substring(text.length - 200));
 
                 // Try to parse as JSON
                 let result;
                 try {
                     result = JSON.parse(text);
+                    console.log('✓ Successfully parsed JSON:', result);
                 } catch (e) {
-                    console.error('Failed to parse JSON:', text);
+                    console.error('✗ Failed to parse JSON!');
+                    console.error('Parse error:', e.message);
+                    console.error('Full response:', text);
+                    messageDiv.innerHTML = '<div class="error-message">Server response error. Check console for details.</div>';
                     throw new Error('Invalid JSON response from server');
                 }
 
