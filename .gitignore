@@ -4,3 +4,33 @@ composer.phar
 # Commit your application's lock file http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file
 # You may choose to ignore a library lock file http://getcomposer.org/doc/02-libraries.md#lock-file
 # composer.lock
+
+# Configuration files with sensitive data
+config.php
+
+# Push notification data
+subscriptions.json
+notifications.log
+
+# Ticket data (if using file-based storage)
+tickets.json
+categories.json
+
+# Upload directory
+uploads/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+error_log

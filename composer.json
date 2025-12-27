@@ -1,0 +1,16 @@
+{
+    "name": "zopollo/it-support-pwa",
+    "description": "IT Support Progressive Web Application with Push Notifications",
+    "type": "project",
+    "require": {
+        "php": ">=7.4",
+        "minishlink/web-push": "^8.0"
+    },
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "Zopollo IT Support",
+            "email": "liam@zopollo.co.uk"
+        }
+    ]
+}

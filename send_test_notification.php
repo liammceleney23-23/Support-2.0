@@ -41,17 +41,75 @@ $payload = json_encode([
     'url' => "/manage_ticket.php?id=$ticket_id"
 ]);
 
-// Log the notification attempt
-$log_file = 'notifications.log';
-$log_entry = date('Y-m-d H:i:s') . " - Test notification queued for $ticket_id\n";
-file_put_contents($log_file, $log_entry, FILE_APPEND);
+// Check if web-push library is available
+if (file_exists('vendor/autoload.php')) {
+    try {
+        require_once 'vendor/autoload.php';
 
-echo json_encode([
-    'success' => true,
-    'message' => "Test notification queued for $ticket_id",
-    'subscription_count' => count($subscriptions),
-    'note' => 'To send actual push notifications, you need to install the web-push PHP library and configure VAPID keys. See update_ticket.php for implementation details.'
-]);
+        // Load configuration
+        $config = require 'config.php';
+
+        $auth = [
+            'VAPID' => $config['vapid']
+        ];
+
+        $webPush = new Minishlink\WebPush\WebPush($auth);
+
+        // Send notifications to all subscriptions
+        $sentCount = 0;
+        $failedCount = 0;
+
+        foreach ($subscriptions as $subscription) {
+            try {
+                $webPush->queueNotification(
+                    Minishlink\WebPush\Subscription::create($subscription),
+                    $payload
+                );
+            } catch (Exception $e) {
+                $failedCount++;
+            }
+        }
+
+        // Send the notifications
+        foreach ($webPush->flush() as $report) {
+            if ($report->isSuccess()) {
+                $sentCount++;
+            } else {
+                $failedCount++;
+            }
+        }
+
+        // Log the result
+        $log_file = 'notifications.log';
+        $log_entry = date('Y-m-d H:i:s') . " - Test notification sent for $ticket_id - Sent: $sentCount, Failed: $failedCount\n";
+        file_put_contents($log_file, $log_entry, FILE_APPEND);
+
+        echo json_encode([
+            'success' => true,
+            'message' => "Test notification sent for $ticket_id",
+            'sent' => $sentCount,
+            'failed' => $failedCount,
+            'total_subscriptions' => count($subscriptions)
+        ]);
+
+    } catch (Exception $e) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Error sending notifications: ' . $e->getMessage()
+        ]);
+    }
+} else {
+    // Web-push library not installed - just log the attempt
+    $log_file = 'notifications.log';
+    $log_entry = date('Y-m-d H:i:s') . " - Test notification queued (no web-push library) for $ticket_id\n";
+    file_put_contents($log_file, $log_entry, FILE_APPEND);
+
+    echo json_encode([
+        'success' => false,
+        'message' => 'Web-push library not installed. Run: composer require minishlink/web-push',
+        'subscription_count' => count($subscriptions)
+    ]);
+}
 
 /**
  * PRODUCTION IMPLEMENTATION NOTES:

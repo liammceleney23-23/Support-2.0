@@ -219,45 +219,89 @@ function sendPushNotification($ticket_id, $action, $ticket_data) {
         'url' => "/manage_ticket.php?id=$ticket_id"
     ]);
 
-    // In a production environment, you would:
-    // 1. Use a proper web push library (like web-push for PHP)
-    // 2. Use VAPID keys for authentication
-    // 3. Send actual push notifications to each subscription endpoint
-    //
-    // For now, we'll log the notification attempt
-    // You'll need to install web-push library: composer require minishlink/web-push
+    // Check if web-push library is available
+    if (file_exists('vendor/autoload.php')) {
+        try {
+            require_once 'vendor/autoload.php';
 
-    // Example (requires web-push library):
-    /*
-    require_once 'vendor/autoload.php';
-    use Minishlink\WebPush\WebPush;
-    use Minishlink\WebPush\Subscription;
+            // Load configuration
+            $config = require 'config.php';
 
-    $auth = [
-        'VAPID' => [
-            'subject' => 'mailto:support@zopollo.com',
-            'publicKey' => 'YOUR_PUBLIC_KEY',
-            'privateKey' => 'YOUR_PRIVATE_KEY'
-        ]
-    ];
+            $auth = [
+                'VAPID' => $config['vapid']
+            ];
 
-    $webPush = new WebPush($auth);
+            $webPush = new Minishlink\WebPush\WebPush($auth);
 
-    foreach ($subscriptions as $subscription) {
-        $webPush->queueNotification(
-            Subscription::create($subscription),
-            $payload
-        );
+            // Send notifications to all subscriptions
+            foreach ($subscriptions as $index => $subscription) {
+                try {
+                    $webPush->queueNotification(
+                        Minishlink\WebPush\Subscription::create($subscription),
+                        $payload
+                    );
+                } catch (Exception $e) {
+                    // Log error but continue with other subscriptions
+                    error_log("Failed to queue notification for subscription $index: " . $e->getMessage());
+                }
+            }
+
+            // Send the notifications
+            $validSubscriptions = [];
+            foreach ($webPush->flush() as $report) {
+                $endpoint = $report->getRequest()->getUri()->__toString();
+
+                if ($report->isSuccess()) {
+                    // Keep successful subscriptions
+                    foreach ($subscriptions as $sub) {
+                        if (isset($sub['endpoint']) && $sub['endpoint'] === $endpoint) {
+                            $validSubscriptions[] = $sub;
+                            break;
+                        }
+                    }
+
+                    // Log success
+                    $log_file = 'notifications.log';
+                    $log_entry = date('Y-m-d H:i:s') . " - Notification sent successfully for $ticket_id: $body\n";
+                    file_put_contents($log_file, $log_entry, FILE_APPEND);
+                } else {
+                    // Log failure
+                    error_log("Notification failed for $endpoint: " . $report->getReason());
+
+                    // Remove invalid subscriptions (expired or unsubscribed)
+                    if ($report->isSubscriptionExpired()) {
+                        // Don't add to validSubscriptions (removes it)
+                    } else {
+                        // Keep subscription for other types of errors
+                        foreach ($subscriptions as $sub) {
+                            if (isset($sub['endpoint']) && $sub['endpoint'] === $endpoint) {
+                                $validSubscriptions[] = $sub;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Update subscriptions file if any were removed
+            if (count($validSubscriptions) < count($subscriptions)) {
+                file_put_contents($subscriptions_file, json_encode($validSubscriptions, JSON_PRETTY_PRINT));
+            }
+
+        } catch (Exception $e) {
+            // Log error
+            error_log("Push notification error: " . $e->getMessage());
+
+            // Fallback to logging
+            $log_file = 'notifications.log';
+            $log_entry = date('Y-m-d H:i:s') . " - Notification ERROR for $ticket_id: " . $e->getMessage() . "\n";
+            file_put_contents($log_file, $log_entry, FILE_APPEND);
+        }
+    } else {
+        // Web-push library not installed - just log the attempt
+        $log_file = 'notifications.log';
+        $log_entry = date('Y-m-d H:i:s') . " - Notification queued (no web-push library) for $ticket_id: $body\n";
+        file_put_contents($log_file, $log_entry, FILE_APPEND);
     }
-
-    foreach ($webPush->flush() as $report) {
-        // Handle results
-    }
-    */
-
-    // Log notification for debugging
-    $log_file = 'notifications.log';
-    $log_entry = date('Y-m-d H:i:s') . " - Notification queued for $ticket_id: $body\n";
-    file_put_contents($log_file, $log_entry, FILE_APPEND);
 }
 ?>

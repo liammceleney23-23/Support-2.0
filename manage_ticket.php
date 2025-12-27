@@ -784,6 +784,20 @@ if (!isset($ticket['notes'])) {
             });
         }
 
+        // Convert VAPID key from base64 to Uint8Array
+        function urlBase64ToUint8Array(base64String) {
+            const padding = '='.repeat((4 - base64String.length % 4) % 4);
+            const base64 = (base64String + padding)
+                .replace(/\-/g, '+')
+                .replace(/_/g, '/');
+            const rawData = window.atob(base64);
+            const outputArray = new Uint8Array(rawData.length);
+            for (let i = 0; i < rawData.length; ++i) {
+                outputArray[i] = rawData.charCodeAt(i);
+            }
+            return outputArray;
+        }
+
         // Subscribe to push notifications
         async function subscribeToPushNotifications(registration) {
             try {
@@ -791,9 +805,12 @@ if (!isset($ticket['notes'])) {
                     return;
                 }
 
+                // VAPID public key
+                const vapidPublicKey = 'BPgIfLcgqH3VWy1ICrxuYV-o4EGwlcloVfOKlt9ZWHxq4qjU69pc-mDx28AyouFpGyTHe87YCPzapTD5Yfkj14I';
+
                 const subscription = await registration.pushManager.subscribe({
                     userVisibleOnly: true,
-                    applicationServerKey: null
+                    applicationServerKey: urlBase64ToUint8Array(vapidPublicKey)
                 });
 
                 await fetch('save_subscription.php', {
