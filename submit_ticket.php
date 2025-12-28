@@ -1,4 +1,8 @@
 <?php
+// Disable all error output to prevent JSON corruption
+error_reporting(0);
+ini_set('display_errors', 0);
+
 header('Content-Type: application/json');
 
 // Function to sanitize input
@@ -195,6 +199,7 @@ if (file_put_contents($tickets_file, json_encode($tickets, JSON_PRETTY_PRINT))) 
 }
 
 echo json_encode($response);
+exit; // Important: exit after sending response
 
 function getResponseTime($priority) {
     switch ($priority) {

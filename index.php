@@ -613,7 +613,29 @@
                     body: formData
                 });
 
-                const result = await response.json();
+                // Check if response is OK
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                // Get response text first to debug
+                const text = await response.text();
+                console.log('=== SUBMIT TICKET RESPONSE ===');
+                console.log('Raw response:', text);
+
+                // Try to parse as JSON
+                let result;
+                try {
+                    result = JSON.parse(text);
+                    console.log('✓ Successfully parsed JSON:', result);
+                } catch (e) {
+                    console.error('✗ Failed to parse JSON!');
+                    console.error('Parse error:', e.message);
+                    console.error('Full response:', text);
+                    formMessage.style.color = '#dc3545';
+                    formMessage.textContent = 'Server response error. Check console for details.';
+                    throw new Error('Invalid JSON response from server');
+                }
 
                 if (result.success) {
                     formMessage.style.color = '#28a745';
@@ -628,6 +650,7 @@
                     formMessage.textContent = result.message;
                 }
             } catch (error) {
+                console.error('Submit ticket error:', error);
                 formMessage.style.color = '#dc3545';
                 formMessage.textContent = 'An error occurred. Please try again.';
             }
