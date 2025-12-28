@@ -240,8 +240,8 @@ function sendPushNotification($ticket_id, $action, $ticket_data) {
         'url' => "/manage_ticket.php?id=$ticket_id"
     ]);
 
-    // Check if web-push library is available
-    if (file_exists('vendor/autoload.php')) {
+    // Check if web-push library AND config are available
+    if (file_exists('vendor/autoload.php') && file_exists('config.php')) {
         try {
             require_once 'vendor/autoload.php';
 
